@@ -10,12 +10,15 @@ import numpy as np
 import tensorflow as tf
 
 from audio_load import load_audio_from_files, audio2spec
+from highway_network import gru_model, five_layer_highway, bottle_net_layer, output_networks
 from rgb_pixelNN import scat2d
 import windows as win
 
 import pdb
 
 layerO = namedtuple('layerO', ['strides', 'padding'])
+bottle_neck_size = 28
+output_network_size = 128
 
 def wst_net_v1(x_dict, dropout, reuse, is_training, n_classes):
     """Network to follow ST preprocessing.
@@ -35,17 +38,15 @@ def wst_net_v1(x_dict, dropout, reuse, is_training, n_classes):
 
         # ..., ...
         U1 = scat2d(x, psi, layer_params)
+        shape = U1.get_shape().as_list() 
+        batch_size, n_freq,Tx, n_channels = shape
+        size = Tx * n_freq* n_channels
         
-        conv = tf.layers.conv2d(U1, nfeat, (7,1), 1, activation=tf.nn.relu)
-        conv = tf.layers.conv2d(conv, nfeat, (1,7), 1, activation=tf.nn.relu)
-        conv = tf.layers.conv2d(conv, nfeat, 5, 1, activation=tf.nn.relu)
-        conv = tf.layers.conv2d(conv, nfeat, 5, 2, activation=tf.nn.relu)
-        conv = tf.layers.conv2d(conv, nfeat, 5, 4, activation=tf.nn.relu)
-        conv = tf.layers.conv2d(conv, nfeat, 5, 8, activation=tf.nn.relu)
+        x = tf.reshape(U1, [batch_size, size])
+        x = five_layer_highway(x, size, dropout)
+        x = bottle_net_layer(x, size, bottle_neck_size, dropout)
+        out = output_networks(x, bottle_neck_size, output_network_size, dropout)
         
-        fc = tf.contrib.layers.flatten(conv)
-        fc = tf.layers.dense(fc, 300)
-        out = tf.layers.dense(fc, n_classes)
     return tf.squeeze(out, axis=1)
 
 def load_data(args):
