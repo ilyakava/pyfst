@@ -28,7 +28,6 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 import windows as win
-from rle import myrlestring
 import salt_baseline as sb
 import salt_data as sd
 import salt_pixelNN as pxNN

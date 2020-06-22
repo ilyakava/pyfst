@@ -18,7 +18,6 @@ from lib.libsvm.python.svmutil import *
 import windows as win
 from salt_binary import scat2d_to_2d_2layer
 from salt_data import split_trainval
-from rle import myrlestring
 
 import pdb
 
