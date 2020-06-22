@@ -24,6 +24,14 @@ To use this file run the following scripts:
 - `scripts/final/svm_wst_all.sh`, runs WST and SVMs for the 4 datasets mentioned in the paper.
 - `scripts/final/svm_wst_all.sh`, runs SVMs on the raw HSI images for the 4 datasets mentioned in the paper.`
 
+## Installation for scripts in scrips/final
+
+- install items in "Software Versioning" below
+- compile libsvm in `lib/libsvm`
+- get masks
+- get mask lists
+- get data
+
 ### Downloading Data
 
 You may download a copy of the HSI data mentioned in the paper [here](https://drive.google.com/file/d/1u6fzTztudcilKUmV9ZKUh6khZTIeAeB7/view?usp=sharing)
@@ -40,7 +48,7 @@ When using options like `--svm_multi_mask_file_list` there should be a txt file 
 
 Create more training/testing splits with `sites_train_val_split.py`.
 
-## Versioning
+## Software Versioning
 
 Tested on Python 2.7.14 (Anaconda), tensorflow 1.10.1, cuda 9.0.176, cudnn-7.0 (8.0 might work too). Red Hat Enterprise Linux Workstation release 7.6 (Maipo). GeForce GTX TITAN X.
 
