@@ -116,7 +116,7 @@ def make_train_mask_from_components(mask_dims, class_to_components, n_samp):
         if n_samp_copy < 1:
             n_samp = int(round(n_samp_copy * sum(comp_lens)))
         valid_components = [comp for comp in components if len(comp) >= n_samp]
-        assert len(valid_components), 'Cant find a component of size %i in class %i with largest comonent %i total size %i' % (n_samp, c, max(comp_lens), sum(comp_lens))
+        assert len(valid_components), 'Cannot find a component of size %i in class %i with largest component %i total size %i' % (n_samp, c, max(comp_lens), sum(comp_lens))
         comp_i = random.randint(0,len(valid_components)-1)
         comp = valid_components[comp_i]
         
@@ -243,16 +243,18 @@ def main():
     # create_train_val_splits('PaviaU', 10, n_trials=10)
     # create_train_val_splits('PaviaU', 20, n_trials=10)
     # create_distributed_train_val_splits('KSC', .02, n_trials=10, out_path='/cfarhomes/ilyak/ilyakavalerov@gmail.com/ramawks69/pyfst/masks')
-    create_distributed_train_val_splits('IP', .05, n_trials=1, out_path='/cfarhomes/ilyak/ilyakavalerov@gmail.com/ramawks69/pyfst/masks')
+    # create_distributed_train_val_splits('IP', .05, n_trials=1, out_path='/cfarhomes/ilyak/ilyakavalerov@gmail.com/ramawks69/pyfst/masks')
     # create_distributed_train_val_splits('IP', .02, n_trials=10, out_path='/cfarhomes/ilyak/ilyakavalerov@gmail.com/ramawks69/pyfst/masks')
     
-    
-    
+    create_distributed_train_val_splits('KSC', 50, n_trials=10, out_path='/cfarhomes/ilyak/ilyakavalerov@gmail.com/ramawks69/pyfst/masks')
     
     # create_train_val_splits('Botswana', 3, n_trials=10, out_path='/cfarhomes/ilyak/ilyakavalerov@gmail.com/ramawks69/pyfst/masks')
     # create_train_val_splits('Botswana', 5, n_trials=10, out_path='/cfarhomes/ilyak/ilyakavalerov@gmail.com/ramawks69/pyfst/masks')
     # create_train_val_splits('Botswana', 10, n_trials=10, out_path='/cfarhomes/ilyak/ilyakavalerov@gmail.com/ramawks69/pyfst/masks')
     # create_train_val_splits('Botswana', 20, n_trials=10, out_path='/cfarhomes/ilyak/ilyakavalerov@gmail.com/ramawks69/pyfst/masks')
+    
+    # create_train_val_splits('IP', 0.02, n_trials=10, out_path='/cfarhomes/ilyak/ilyakavalerov@gmail.com/ramawks69/pyfst/masks')
+    # create_train_val_splits('IP', 0.05, n_trials=10, out_path='/cfarhomes/ilyak/ilyakavalerov@gmail.com/ramawks69/pyfst/masks')
     
 if __name__ == '__main__':
     main()

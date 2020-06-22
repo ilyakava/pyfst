@@ -16,6 +16,7 @@ import shutil
 import time
 
 import argparse
+from sklearn.metrics import confusion_matrix, cohen_kappa_score, accuracy_score
 import numpy as np
 from PIL import Image
 import scipy.io as sio
@@ -26,7 +27,6 @@ from tqdm import tqdm
 
 
 import windows as win
-from rle import myrlestring
 # import salt_baseline as sb
 # import salt_data as sd
 import fst3d_feat as fst
@@ -95,11 +95,20 @@ def scat3d_to_3d_nxn_2layer(x, reuse=tf.AUTO_REUSE, psis=None, phi=None, layer_p
             9: 7,
             7: 5,
             5: 3,
-            3: 1
+            3: 1,
+            1: 1
         }
-        lambda1_d = ds_amounts[psis[0].kernel_size[1]]; band1_d = 3
-        lambda2_d = ds_amounts[psis[1].kernel_size[1]]; band2_d = 3
-        lambdax_d = ds_amounts[phi.kernel_size[1]];
+        def avg_cube_side(kernel_size):
+            # started doing this for cubes with spatial size 1
+            avg_cube_side_ = int(round(np.prod(kernel_size[:2])**(1/2.0)))
+            if avg_cube_side_ % 2 == 0:
+                avg_cube_side_ += 1
+            return avg_cube_side_
+        lambda1_d = ds_amounts[ avg_cube_side(psis[0].kernel_size) ];
+        lambda2_d = ds_amounts[ avg_cube_side(psis[1].kernel_size) ];
+        lambdax_d = ds_amounts[ avg_cube_side(phi.kernel_size) ];
+        band1_d = 3
+        band2_d = 3
         
         U1 = tf.layers.max_pooling3d(U1, (lambda1_d,band1_d,1), (lambda1_d,band1_d,1), padding='same')
 
@@ -119,7 +128,6 @@ def scat3d_to_3d_nxn_2layer(x, reuse=tf.AUTO_REUSE, psis=None, phi=None, layer_p
                 increasing_psi = win.fst3d_psi_factory(psis[1].kernel_size, used_params)
                 if increasing_psi.nfilt > 0:
                     U2s.append(fst.scat3d(U1[res_i:(res_i+1),:,:,:,:], increasing_psi, layer_params[1]))
-        
         U2 = tf.concat(U2s, 4)
         # U2 is (1,bands,h,w,lambda2)
         
@@ -157,8 +165,17 @@ def scat3d_to_3d_nxn_2layer(x, reuse=tf.AUTO_REUSE, psis=None, phi=None, layer_p
         [p1b, p1h, p1w] = slice_idxs(U1.shape[1:4], phi.kernel_size)
         [p2b, p2h, p2w] = slice_idxs(x.shape[1:4], phi.kernel_size)
 
-        S1 = fst.scat3d(U1[:, :,(p1h):-(p1h), (p1w):-(p1w), :], phi, layer_params[2])
-        S0 = fst.scat3d(x[:, :,(p2h):-(p2h), (p2w):-(p2w), :], phi, layer_params[2])
+        if not (p1h == 0 and p1w == 0):
+            S1 = fst.scat3d(U1[:, :,(p1h):-(p1h), (p1w):-(p1w), :], phi, layer_params[2])
+        else:
+            # if the size of the spatial kernel is 1 in the spatial dimension we
+            # don't need to do this.
+            S1 = fst.scat3d(U1, phi, layer_params[2])
+            
+        if not (p2h == 0 and p2w == 0):
+            S0 = fst.scat3d(x[:, :,(p2h):-(p2h), (p2w):-(p2w), :], phi, layer_params[2])
+        else:
+            S0 = fst.scat3d(x, phi, layer_params[2])
 
         # just to get the size down to 1 (flattening step)
         S0 = tf.reshape(S0, [-1, final_size, final_size, 1])
@@ -205,12 +222,17 @@ def gabor_mag_filter(x, reuse=tf.AUTO_REUSE, psis=None, layer_params=None, final
             9: 7,
             7: 5,
             5: 3,
-            3: 1
+            3: 1,
+            1: 1
         }
         lambda1_d = ds_amounts[psis[0].kernel_size[1]]; band1_d = 3
         
         U1 = tf.layers.max_pooling3d(U1, (lambda1_d,band1_d,1), (lambda1_d,band1_d,1), padding='same')
-        U1 = tf.reshape(U1, [-1, final_size, final_size])
+        U1 = tf.reshape(U1, [1, -1, final_size, final_size, 1])
+        
+        # SX downsampling from ST for comparable feature size
+        U1 = tf.layers.max_pooling3d(U1, (lambda1_d,1,1), (lambda1_d,1,1), padding='same')
+        U1 = tf.squeeze(U1)
 
     return tf.transpose(U1, [1, 2, 0])
 
@@ -587,19 +609,30 @@ network_dict = {
 }
 sts_dict = {
     'paviaU': st_net_spec_struct([9,9,9],[9,9,9],[9,9,9]),
+    'paviaU_dist': st_net_spec_struct([5,7,7],[5,7,7],[5,7,7]),
+    'paviaU_SSS': st_net_spec_struct([7,3,3],[7,3,3],[7,3,3]),
     '7': st_net_spec_struct([7,7,7],[7,7,7],[7,7,7]),
     '9': st_net_spec_struct([9,9,9],[9,9,9],[9,9,9]),
     '5': st_net_spec_struct([5,5,5],[5,5,5],[5,5,5]),
     '3': st_net_spec_struct([3,3,3],[3,3,3],[3,3,3]),
     'Botswana': st_net_spec_struct([7,7,7],[7,5,5],[7,5,5]),
+    'Botswana_dist': st_net_spec_struct([7,9,9],[7,5,5],[7,5,5]),
+    'Botswana_SSS': st_net_spec_struct([3,5,5],[3,5,5],[3,5,5]),
     'KSC': st_net_spec_struct([5,9,9],[5,7,7],[5,7,7]),
-    'PU_SSS': st_net_spec_struct([9,7,7],[9,3,3],[9,3,3]),
-    'IP_SSS': st_net_spec_struct([5,9,9],[5,5,5],[5,5,5]),
-    'IP_gabor': st_net_spec_struct([5,9,9],None,None),
-    'PU_gabor': st_net_spec_struct([9,7,7],None,None),
-    'KSC_gabor': st_net_spec_struct([5,9,9],None,None),
-    'Botswana_gabor': st_net_spec_struct([7,7,7],None,None),
+    'KSC_SSS': st_net_spec_struct([3,7,7],[3,1,1],[3,1,1]),
+    'KSC_dist': st_net_spec_struct([3,7,7],[3,7,7],[3,7,7]),
+    'IP': st_net_spec_struct([5,9,9],[5,5,5],[5,5,5]),
+    'IP_dist': st_net_spec_struct([7,9,9],[7,9,9],[7,9,9]),
+    'IP_SSS': st_net_spec_struct([5,1,1],[5,1,1],[5,1,1]),
     'tang': st_net_spec_struct(None,None,None),
+    'IP_dist_gabor': st_net_spec_struct([7,9,9],None,None),
+    'IP_SSS_gabor': st_net_spec_struct([5,1,1],None,None),
+    'KSC_dist_gabor': st_net_spec_struct([3,7,7],None,None),
+    'KSC_SSS_gabor': st_net_spec_struct([3,7,7],None,None),
+    'Botswana_dist_gabor': st_net_spec_struct([7,9,9],None,None),
+    'Botswana_SSS_gabor': st_net_spec_struct([3,5,5],None,None),
+    'paviaU_dist_gabor': st_net_spec_struct([5,7,7],None,None),
+    'paviaU_SSS_gabor': st_net_spec_struct([7,3,3],None,None),
 }
 
 def many_svm_evals(args):
@@ -645,14 +678,17 @@ def many_svm_evals(args):
         end = time.time()
         print('Training done. Took %is' % int(end - start))
         
-        n_correct = 0
+        predictions = np.zeros_like(valY)
         for i in tqdm(range(0,valY.shape[0],bs), desc='Getting Val Accuracy'):
-            p_label = clf.predict(valX.squeeze()[i:i+bs]);
-            n_correct += (p_label == valY[i:i+bs]).sum()
-        acc = float(n_correct) / valY.shape[0]
+            predictions[i:i+bs] = clf.predict(valX.squeeze()[i:i+bs])
+        overall_acc = accuracy_score(valY, predictions)
+        C = confusion_matrix(valY, predictions).astype(float)
+        per_class = np.diag(C) / C.sum(axis=1)
+        average_acc = np.mean(per_class)
+        kappa = cohen_kappa_score(valY, predictions)
         print('Done with %s' % mask_path )
-        print('SVM has validation accuracy %.2f' % (acc*100) )
-        results[mask_path] = acc
+        print('SVM has validation OA %.2f, AA %.2f, kappa %.4f' % (overall_acc*100, average_acc*100, kappa) )
+        results[mask_path] = (overall_acc, average_acc, kappa)
     
     npz_path = os.path.join(args.model_root, 'SVM_results_%i.npz' % (random.randint(0,1e10)))
     np.savez(npz_path, results=results)
@@ -683,19 +719,37 @@ def svm_predict(args):
     s = args.network_spatial_size - 1
     trainX, trainY, valX, valY = get_train_val_splits(data, labels, train_mask, val_mask, (s,s,0))
     
+    # Cs = 2.0**np.array(range(-20,21,2))
+    # accs = np.zeros_like(Cs)
+    # for j, C in enumerate(Cs):
+    #     print('starting training')
+    #     start = time.time()
+    #     clf = SVC(kernel='linear', C=C)
+    #     clf.fit(trainX.squeeze(), trainY)
+    #     overall_acc = clf.score(valX.squeeze(), valY)
+    #     accs[j] = overall_acc
+    #     end = time.time()
+    #     print('Training done. Took %is' % int(end - start))
+    #     print('C %f. Got %f' % (C, overall_acc))
+    
+
     print('starting training')
     start = time.time()
-    clf = SVC(kernel='linear')
+    clf = SVC(kernel='linear', C=args.svm_regularization_param)
     clf.fit(trainX.squeeze(), trainY)
     end = time.time()
     print('Training done. Took %is' % int(end - start))
     
-    n_correct = 0
+    
+    predictions = np.zeros_like(valY)
     for i in tqdm(range(0,valY.shape[0],bs), desc='Getting Val Accuracy'):
-        p_label = clf.predict(valX.squeeze()[i:i+bs]);
-        n_correct += (p_label == valY[i:i+bs]).sum()
-    acc = float(n_correct) / valY.shape[0]
-    print('SVM has validation accuracy %.2f' % (acc*100) )
+        predictions[i:i+bs] = clf.predict(valX.squeeze()[i:i+bs])
+    overall_acc = accuracy_score(valY, predictions)
+    C = confusion_matrix(valY, predictions).astype(float)
+    per_class = np.diag(C) / C.sum(axis=1)
+    average_acc = np.mean(per_class)
+    kappa = cohen_kappa_score(valY, predictions)
+    print('SVM has validation OA %.2f, AA %.2f, kappa %.4f' % (overall_acc*100, average_acc*100, kappa) )
 
     # test everything
     y_predicted = []
@@ -708,15 +762,17 @@ def svm_predict(args):
     
     imgmatfiledata = {}
     imgmatfiledata[u'imgHat'] = pred_image
-    groundtruthfilename = os.path.splitext(trainlabelname)[0]
-    imgmatfiledata[u'groundtruthfilename'] = '%s_%s.mat' % (groundtruthfilename, args.network)
+    # groundtruthfilename = os.path.splitext(trainlabelname)[0]
+    npzfilename = '%s_pred.npz' % args.mask_root.split('/')[-1].split('.')[0]
+    # imgmatfiledata[u'groundtruthfilename'] = '%s_%s.mat' % (groundtruthfilename, args.network)
+    imgmatfiledata[u'groundtruthfilename'] = '%s_pred.mat' % args.mask_root.split('/')[-1].split('.')[0]
     hdf5storage.write(imgmatfiledata,
         filename=os.path.join(args.model_root, imgmatfiledata[u'groundtruthfilename']),
         matlab_compatible=True)
     
     print('Saved %s' % os.path.join(args.model_root, imgmatfiledata[u'groundtruthfilename']))
     
-    npz_path = os.path.join(args.model_root, '%s_SVM.npz' % (groundtruthfilename))
+    npz_path = os.path.join(args.model_root, npzfilename)
     np.savez(npz_path, pred_image=pred_image)
     print('Saved %s' % npz_path)
 
@@ -846,7 +902,8 @@ def train(args):
     
         # Evaluate the accuracy of the model
         acc_op = tf.metrics.accuracy(labels=labels, predictions=pred_classes)
-    
+        avg_acc_op = tf.metrics.mean_per_class_accuracy(labels=labels, predictions=pred_classes, num_classes=n_classes)
+        kappa_op = tf.contrib.metrics.cohen_kappa(labels=labels, predictions_idx=pred_classes, num_classes=n_classes)
         # tf.summary.scalar('min', loss_op)
     
         # TF Estimators requires to return a EstimatorSpec, that specify
@@ -856,7 +913,7 @@ def train(args):
             predictions=pred_classes,
             loss=loss_op,
             train_op=train_op,
-            eval_metric_ops={'accuracy': acc_op})
+            eval_metric_ops={'accuracy': acc_op, 'avg_accuracy': avg_acc_op, 'kappa': kappa_op})
     
         return estim_specs
     
@@ -901,6 +958,9 @@ def train(args):
         model.train(train_input_fn)
 
         e = model.evaluate(eval_input_fn, name='eval')
+        tp = float(n_eval) / nlabeled # test percentage
+        avg_acc_at_best_eval_acc = 0
+        kappa_at_best_eval_acc = 0
         
         if e['accuracy'] > best_acc:
             tf.logging.info("{:06d}: High Accuracy. Saving model with Validation Accuracy: {:.4f}".format(i*args.eval_period, e['accuracy']))
@@ -924,6 +984,8 @@ def train(args):
             test_e = model.evaluate(test_input_fn, name='test')
             if e['accuracy'] > best_acc:
                 test_acc_at_best_eval_acc = test_e['accuracy']
+                avg_acc_at_best_eval_acc = tp*test_e['avg_accuracy'] + (1-tp)*e['avg_accuracy']
+                kappa_at_best_eval_acc = tp*test_e['kappa'] + (1-tp)*e['kappa']
             if e['loss'] < best_loss:
                 test_acc_at_best_eval_loss = test_e['accuracy']
             
@@ -932,13 +994,12 @@ def train(args):
         tf.logging.info("{:06d}: Validation Accuracy: {:.4f} (At lowest loss: {:.4f}) (Best Ever: {:.4f})".format(i*args.eval_period, e['accuracy'], acc_at_best_loss, best_acc))
         tf.logging.info("{:06d}: Test Accuracy: Best by Eval Acc: {:.4f}. Best by Eval Loss: {:.4f}".format(i*args.eval_period, test_acc_at_best_eval_acc, test_acc_at_best_eval_loss))
         
-        tp = float(n_eval) / nlabeled # test percentage
         overall_acc_at_best_eval_acc = tp*test_acc_at_best_eval_acc + (1-tp)*best_acc
         overall_acc_at_best_eval_loss = tp*test_acc_at_best_eval_loss + (1-tp)*acc_at_best_loss
         tf.logging.info("{:06d}: Overall Accuracy: Best by Eval Acc: {:.4f}. Best by Eval Loss: {:.4f}".format(i*args.eval_period, overall_acc_at_best_eval_acc, overall_acc_at_best_eval_loss))
         
         npz_path = os.path.join(args.model_root, 'results.npz')
-        np.savez(npz_path, results={args.mask_root: overall_acc_at_best_eval_acc})
+        np.savez(npz_path, results={args.mask_root: (overall_acc_at_best_eval_acc, avg_acc_at_best_eval_acc, kappa_at_best_eval_acc)})
         print('Saved %s' % npz_path)
         
         if n_nondecreasing_evals >= args.terminate_if_n_nondecreasing_evals:

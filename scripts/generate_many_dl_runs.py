@@ -482,13 +482,127 @@ import pdb
 
 
 ### DFFN Botswana SSS
-mask_list_f = open('mask_lists/Botswana_sss.1.txt', "r")
+# mask_list_f = open('mask_lists/Botswana_sss.1.txt', "r")
+
+# masks = [line.strip() for line in mask_list_f.readlines() if line != "\n"]
+# mask_list_f.close()
+# valid_masks = [m for m in masks if m and os.path.exists(m)]
+
+# with open('scripts/Botswana_dffn_sss1.sh', 'w') as fw:
+#     fw.write("#!/bin/bash")
+    
+#     for mask_path in valid_masks:
+#         mask_name = ntpath.basename(mask_path)
+#         mask_name = mask_name.split('.')[0]
+        
+#         for trial in range(1):
+#             model_root = '/scratch2/ilyak/locDoc/pyfst/models/dffn'
+            
+#             model_root = os.path.join(model_root, mask_name, str(trial))
+#             command = """CUDA_VISIBLE_DEVICES=1 \
+#             python hyper_pixelNN.py \
+#             --data_root /scratch2/ilyak/locDoc/data/hyperspec/datasets \
+#             --dataset Botswana \
+#             --npca_components 5 \
+#             --batch_size 100 \
+#             --lr 0.0001 \
+#             --network DFFN_3tower_4depth \
+#             --network_spatial_size 25 \
+#             --eval_period 2 \
+#             --num_epochs 100000 \
+#             --mask_root  {} \
+#             --model_root {} \
+#             --terminate_if_n_nondecreasing_evals 10;""".format(mask_path, model_root)
+            
+#             fw.write("\n")
+#             fw.write(command)
+#             fw.write("\n")
+
+
+### DFFN Botswana distributed
+# mask_list_f = open('mask_lists/Botswana_distributed.2.txt', "r")
+
+# masks = [line.strip() for line in mask_list_f.readlines() if line != "\n"]
+# mask_list_f.close()
+# valid_masks = [m for m in masks if m and os.path.exists(m)]
+
+# with open('scripts/generated/Botswana_dffn_dist2of2.sh', 'w') as fw:
+#     fw.write("#!/bin/bash")
+    
+#     for mask_path in valid_masks:
+#         mask_name = ntpath.basename(mask_path)
+#         mask_name = mask_name.split('.')[0]
+        
+#         for trial in range(1):
+#             model_root = '/vulcan/scratch/ilyak/experiments/hsi/models/dffn'
+#             data_root = '/fs/vulcan-scratch/ilyak/locDoc/data/hyperspec'
+            
+#             model_root = os.path.join(model_root, mask_name, str(trial))
+#             command = """CUDA_VISIBLE_DEVICES=1 \
+#             python hyper_pixelNN.py \
+#             --dataset Botswana \
+#             --npca_components 5 \
+#             --batch_size 100 \
+#             --lr 0.0005 \
+#             --network DFFN_3tower_4depth \
+#             --network_spatial_size 25 \
+#             --eval_period 2 \
+#             --num_epochs 100000 \
+#             --mask_root  {} \
+#             --model_root {} \
+#             --data_root {} \
+#             --terminate_if_n_nondecreasing_evals 10;""".format(mask_path, model_root, data_root)
+            
+#             fw.write("\n")
+#             fw.write(command)
+#             fw.write("\n")
+            
+### DFFN KSC distributed
+# mask_list_f = open('mask_lists/KSC_distributed.2.txt', "r")
+
+# masks = [line.strip() for line in mask_list_f.readlines() if line != "\n"]
+# mask_list_f.close()
+# valid_masks = [m for m in masks if m and os.path.exists(m)]
+
+# with open('scripts/generated/KSC_dffn_dist2of2.sh', 'w') as fw:
+#     fw.write("#!/bin/bash")
+    
+#     for mask_path in valid_masks:
+#         mask_name = ntpath.basename(mask_path)
+#         mask_name = mask_name.split('.')[0]
+        
+#         for trial in range(1):
+#             model_root = '/vulcan/scratch/ilyak/experiments/hsi/models/dffn'
+#             data_root = '/fs/vulcan-scratch/ilyak/locDoc/data/hyperspec'
+            
+#             model_root = os.path.join(model_root, mask_name, str(trial))
+#             command = """CUDA_VISIBLE_DEVICES=1 \
+#             python hyper_pixelNN.py \
+#             --dataset KSC \
+#             --npca_components 5 \
+#             --batch_size 100 \
+#             --lr 0.0005 \
+#             --network DFFN_3tower_4depth \
+#             --network_spatial_size 25 \
+#             --eval_period 2 \
+#             --num_epochs 100000 \
+#             --mask_root  {} \
+#             --model_root {} \
+#             --data_root {} \
+#             --terminate_if_n_nondecreasing_evals 10;""".format(mask_path, model_root, data_root)
+            
+#             fw.write("\n")
+#             fw.write(command)
+#             fw.write("\n")
+
+### DFFN IP SSS
+mask_list_f = open('mask_lists/IP_sss.5.txt', "r")
 
 masks = [line.strip() for line in mask_list_f.readlines() if line != "\n"]
 mask_list_f.close()
 valid_masks = [m for m in masks if m and os.path.exists(m)]
 
-with open('scripts/Botswana_dffn_sss1.sh', 'w') as fw:
+with open('scripts/generated/IP_dffn_sss5of5.sh', 'w') as fw:
     fw.write("#!/bin/bash")
     
     for mask_path in valid_masks:
@@ -496,24 +610,142 @@ with open('scripts/Botswana_dffn_sss1.sh', 'w') as fw:
         mask_name = mask_name.split('.')[0]
         
         for trial in range(1):
-            model_root = '/scratch2/ilyak/locDoc/pyfst/models/dffn'
+            model_root = '/vulcan/scratch/ilyak/experiments/hsi/models/ip/dffn'
+            data_root = '/fs/vulcan-scratch/ilyak/locDoc/data/hyperspec'
             
             model_root = os.path.join(model_root, mask_name, str(trial))
-            command = """CUDA_VISIBLE_DEVICES=1 \
+            command = """CUDA_VISIBLE_DEVICES=0 \
             python hyper_pixelNN.py \
-            --data_root /scratch2/ilyak/locDoc/data/hyperspec/datasets \
-            --dataset Botswana \
-            --npca_components 5 \
+            --dataset IP \
+            --npca_components 3 \
             --batch_size 100 \
-            --lr 0.0001 \
+            --lr 0.00005 \
             --network DFFN_3tower_4depth \
             --network_spatial_size 25 \
-            --eval_period 2 \
+            --eval_period 5 \
             --num_epochs 100000 \
             --mask_root  {} \
             --model_root {} \
-            --terminate_if_n_nondecreasing_evals 10;""".format(mask_path, model_root)
+            --data_root {} \
+            --terminate_if_n_nondecreasing_evals 10;""".format(mask_path, model_root, data_root)
             
             fw.write("\n")
             fw.write(command)
             fw.write("\n")
+
+### EAP IP SSS
+# mask_list_f = open('mask_lists/IP_sss.txt', "r")
+
+# masks = [line.strip() for line in mask_list_f.readlines() if line != "\n"]
+# mask_list_f.close()
+# valid_masks = [m for m in masks if m and os.path.exists(m)]
+
+# with open('scripts/generated/IP_eap_sss1of1.sh', 'w') as fw:
+#     fw.write("#!/bin/bash")
+    
+#     for mask_path in valid_masks:
+#         mask_name = ntpath.basename(mask_path)
+#         mask_name = mask_name.split('.')[0]
+        
+#         for trial in range(1):
+#             model_root = '/vulcan/scratch/ilyak/experiments/hsi/models/eap'
+#             data_root = '/fs/vulcan-scratch/ilyak/locDoc/data/hyperspec'
+            
+#             model_root = os.path.join(model_root, mask_name, str(trial))
+#             command = """CUDA_VISIBLE_DEVICES=0 \
+#             python hyper_pixelNN.py \
+#             --dataset IP \
+#             --npca_components 4 \
+#             --attribute_profile \
+#             --batch_size 50 \
+#             --lr 0.00001 \
+#             --network aptoula \
+#             --network_spatial_size 9 \
+#             --eval_period 25 \
+#             --num_epochs 100000 \
+#             --mask_root  {} \
+#             --model_root {} \
+#             --data_root {} \
+#             --terminate_if_n_nondecreasing_evals 10;""".format(mask_path, model_root, data_root)
+            
+#             fw.write("\n")
+#             fw.write(command)
+#             fw.write("\n")
+
+### EAP Bots dist
+# mask_list_f = open('mask_lists/Botswana_distributed.txt', "r")
+
+# masks = [line.strip() for line in mask_list_f.readlines() if line != "\n"]
+# mask_list_f.close()
+# valid_masks = [m for m in masks if m and os.path.exists(m)]
+
+# with open('scripts/generated/Bots_eap_dist1of1.sh', 'w') as fw:
+#     fw.write("#!/bin/bash")
+    
+#     for mask_path in valid_masks:
+#         mask_name = ntpath.basename(mask_path)
+#         mask_name = mask_name.split('.')[0]
+        
+#         for trial in range(1):
+#             model_root = '/scratch0/ilya/locDoc/pyfst/june_models/dffn'
+#             data_root = '/scratch0/ilya/locDoc/data/hyperspec/datasets'
+            
+#             model_root = os.path.join(model_root, mask_name, str(trial))
+#             command = """CUDA_VISIBLE_DEVICES=0 \
+#             python hyper_pixelNN.py \
+#             --dataset Botswana \
+#             --npca_components 4 \
+#             --attribute_profile \
+#             --batch_size 50 \
+#             --lr 0.0001 \
+#             --network aptoula \
+#             --network_spatial_size 9 \
+#             --eval_period 2 \
+#             --num_epochs 100000 \
+#             --mask_root  {} \
+#             --model_root {} \
+#             --data_root {} \
+#             --terminate_if_n_nondecreasing_evals 10;""".format(mask_path, model_root, data_root)
+            
+#             fw.write("\n")
+#             fw.write(command)
+#             fw.write("\n")
+
+### EAP KSC dist
+# mask_list_f = open('mask_lists/KSC_distributed.txt', "r")
+
+# masks = [line.strip() for line in mask_list_f.readlines() if line != "\n"]
+# mask_list_f.close()
+# valid_masks = [m for m in masks if m and os.path.exists(m)]
+
+# with open('scripts/generated/KSC_eap_dist1of1.sh', 'w') as fw:
+#     fw.write("#!/bin/bash")
+    
+#     for mask_path in valid_masks:
+#         mask_name = ntpath.basename(mask_path)
+#         mask_name = mask_name.split('.')[0]
+        
+#         for trial in range(1):
+#             model_root = '/scratch2/ilyak/locDoc/pyfst/models/dffn'
+#             data_root = '/scratch2/ilyak/locDoc/data/hyperspec/datasets'
+            
+#             model_root = os.path.join(model_root, mask_name, str(trial))
+#             command = """CUDA_VISIBLE_DEVICES=0 \
+#             python hyper_pixelNN.py \
+#             --dataset KSC \
+#             --npca_components 4 \
+#             --attribute_profile \
+#             --batch_size 50 \
+#             --lr 0.0001 \
+#             --network aptoula \
+#             --network_spatial_size 9 \
+#             --eval_period 2 \
+#             --num_epochs 100000 \
+#             --mask_root  {} \
+#             --model_root {} \
+#             --data_root {} \
+#             --terminate_if_n_nondecreasing_evals 10;""".format(mask_path, model_root, data_root)
+            
+#             fw.write("\n")
+#             fw.write(command)
+#             fw.write("\n")

@@ -154,11 +154,16 @@ def fst3d_psi_factory(kernel_size, min_freq=[0,0,0]):
         np.linspace(0, 1, kernel_size[1], endpoint=False),
         np.linspace(0, 1, kernel_size[2], endpoint=False)
     )))
-    # never do any averaging
-    filter_params = np.array(filter(lambda fp: np.all(fp > np.array([0,0,0])), filter_params))
-    # remove filters with too low freq
-    filter_params = np.array(filter(lambda fp: np.all(fp >= min_freq), filter_params))
-    filter_params = np.array(filter(lambda fp: np.any(fp > min_freq), filter_params))
+    # never do any averaging, unless spatial size is 1
+    if not kernel_size[1] == 1:
+        filter_params = np.array(filter(lambda fp: np.all(fp > np.array([0,0,0])), filter_params))
+    # remove filters with too low freq, unless spatial size is 1, in which case
+    # just look at the relevant spectral dimension
+    if not kernel_size[1] == 1:
+        filter_params = np.array(filter(lambda fp: np.all(fp >= min_freq), filter_params))
+        filter_params = np.array(filter(lambda fp: np.any(fp > min_freq), filter_params))
+    else:
+        filter_params = np.array(filter(lambda fp: fp[0] >= min_freq[0], filter_params))
     nfilt = filter_params.shape[0]
     if nfilt == 0:
         return winO(0, None, None, kernel_size)

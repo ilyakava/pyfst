@@ -48,7 +48,20 @@ dset_fieldnames_dict = {
     'KSC': ('KSC', 'KSC_gt'),
     'IP': ('indian_pines_corrected', 'indian_pines_gt')
 }
-
+# in nm/pixel
+bandwidth_dict = {
+    'PaviaU': 430 / 103.0,
+    'Botswana': 2100 / 242.0,
+    'KSC': 2100 / 224.0,
+    'IP': 2100 / 224.0
+}
+# in meters/pix
+spatial_res_dict = {
+    'PaviaU': 1.3,
+    'IP': 3.7,
+    'Botswana': 30.0,
+    'KSC': 18.0
+}
 
 def load_data(trainimgname, trainimgfield, trainlabelname, trainlabelfield, dataset_path=DATASET_PATH):
     mat_contents = sio.loadmat(os.path.join(dataset_path, trainimgname))
