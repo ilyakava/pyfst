@@ -27,10 +27,12 @@ To use this file run the following scripts:
 ## Installation for scripts in scrips/final
 
 - install items in "Software Versioning" below
-- compile libsvm in `lib/libsvm`
+- compile libsvm in `lib/libsvm` (optional)
 - get masks
 - get mask lists
 - get data
+
+Archived version with masks is here [here](https://github.com/ilyakava/pyfst/releases/tag/MajRev1).
 
 ### Downloading Data
 
@@ -51,6 +53,12 @@ Create more training/testing splits with `sites_train_val_split.py`.
 ## Software Versioning
 
 Tested on Python 2.7.14 (Anaconda), tensorflow 1.10.1, cuda 9.0.176, cudnn-7.0 (8.0 might work too). Red Hat Enterprise Linux Workstation release 7.6 (Maipo). GeForce GTX TITAN X.
+
+```
+conda create -n venvtfnonb python=2.7.14
+pip install --ignore-installed --upgrade tensorflow-gpu==1.10.1
+pip install sklearn tqdm h5py hdf5storage pillow matplotlib plotly scikit-image
+```
 
 ## License
 
