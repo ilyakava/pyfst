@@ -694,6 +694,8 @@ def many_svm_evals(args):
     np.savez(npz_path, results=results)
     print('Saved %s' % npz_path)
 
+import pdb
+
 def svm_predict(args):
     """Train and Predict using an SVM features on features.
     
@@ -739,6 +741,8 @@ def svm_predict(args):
     clf.fit(trainX.squeeze(), trainY)
     end = time.time()
     print('Training done. Took %is' % int(end - start))
+    
+    pdb.set_trace()
     
     
     predictions = np.zeros_like(valY)

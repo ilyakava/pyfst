@@ -2,7 +2,7 @@
 *.html
 *.pyc
 doc/*
-*.mat
+#*.mat
 .DS_Store
 *.exe
 *.mexw64

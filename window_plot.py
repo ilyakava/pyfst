@@ -281,9 +281,13 @@ def make_dataset_cube_plot():
 import windows as win
 
 def display_3dfilter():
-    cube = win.fst3d_psi_window_3D(0, 0, 1/7., [7,7,7])
+    n = 9
+    cube = win.fst3d_psi_window_3D(0, 0, 1/float(n), [n,n,n])
     cube = np.imag(cube)
-    pyplot_slices(cube[:,:,3], cube[:,3,:], cube[3,:,:])
+    pyplot_slices(cube[:,:,n//2], cube[:,n//2,:], cube[n//2,:,:])
+    #pyplot_3dscatter(cube[:,:,n//2], cube[:,n//2,:], cube[n//2,:,:])
 
 if __name__ == '__main__':
-    make_dataset_slice_plots()
+    #make_dataset_slice_plots()
+    #display_3dfilter()
+    make_3dscatter_plots()
