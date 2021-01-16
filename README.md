@@ -29,7 +29,7 @@ To use this file run the following scripts:
 - `scripts/final/svm_wst_all.sh`, runs WST and SVMs for the 4 datasets mentioned in the paper.
 - `scripts/final/svm_wst_all.sh`, runs SVMs on the raw HSI images for the 4 datasets mentioned in the paper.`
 
-## Installation for scripts in scrips/final
+## Installation for scripts in scripts/final
 
 - install items in "Software Versioning" below
 - compile libsvm in `lib/libsvm` (optional)
