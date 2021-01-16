@@ -14,6 +14,8 @@ Please cite:
   doi={10.1109/TGRS.2020.3040203}}
 ```
 
+Based on the [arxiv](https://arxiv.org/pdf/1906.06804.pdf), [ieee](https://ieeexplore.ieee.org/document/9288871) papers.
+
 ### Usage
 
 The main file for HSI analysis is `hyper_pixelNN.py`.
