@@ -3,12 +3,15 @@
 Please cite:
 
 ```
-@article{tfST,
-	title={Three-Dimensional Fourier Scattering Transform and Classification of Hyperspectral Images},
-	author={Ilya Kavalerov and Weilin Li and Wojciech Czaja and Rama Chellappa},
-	journal={arXiv preprint arXiv:1906.06804},
-	year={2019}
-}
+@ARTICLE{3dfst,
+  author={I. {Kavalerov} and W. {Li} and W. {Czaja} and R. {Chellappa}},
+  journal={IEEE Transactions on Geoscience and Remote Sensing}, 
+  title={3-D Fourier Scattering Transform and Classification of Hyperspectral Images}, 
+  year={2020},
+  volume={},
+  number={},
+  pages={1-16},
+  doi={10.1109/TGRS.2020.3040203}}
 ```
 
 ### Usage
