@@ -1,4 +1,3 @@
-CUDA_VISIBLE_DEVICES=0 \
 python hyper_pixelNN.py \
 --dataset KSC \
 --svm_predict \

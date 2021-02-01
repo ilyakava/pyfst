@@ -280,8 +280,8 @@ def model_fn(features, labels, mode):
 
 from window_plot import ScrollThruPlot
 import scipy.io as sio
-DATA_PATH = '/scratch0/ilya/locDoc/data/hyperspec'
-DATASET_PATH = '/scratch0/ilya/locDoc/data/hyperspec/datasets'
+DATA_PATH = os.environ['DATA_PATH']
+DATASET_PATH = os.environ['DATASET_PATH']
 from window_plot import pyplot_cube
 
 def scat2d_eg():

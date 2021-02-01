@@ -38,8 +38,8 @@ import pdb
 
 PB_EXPORT_DIR2 = 'best_loss' # protobuffer for tf serving
 PB_EXPORT_DIR = 'best_acc' # protobuffer for tf serving
-DATA_PATH = '/scratch0/ilya/locDoc/data/hyperspec'
-DATASET_PATH = '/scratch0/ilya/locDoc/data/hyperspec/datasets'
+DATA_PATH = os.environ['DATA_PATH']
+DATASET_PATH = os.environ['DATASET_PATH']
 PAD_TYPE = 'symmetric'
 
 layerO = namedtuple('layerO', ['strides', 'padding'])
@@ -1033,7 +1033,7 @@ def main():
         help='If not None, run eval using an SVM on data features. This is a path to a txt file with masks to use (default: %(default)s)')
     # Important optionals
     parser.add_argument(
-        '--data_root', type=str, default='/scratch0/ilya/locDoc/data/hyperspec/datasets',
+        '--data_root', type=str, default=os.environ['DATASET_PATH'],
         help='Where to find the HSI data cube .mat files (default: %(default)s)')
     parser.add_argument(
         '--network', type=str, default=None,

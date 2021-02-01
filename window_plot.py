@@ -269,7 +269,7 @@ class ScrollThruPlot(object):
 import os
 import scipy.io as sio
 
-DATASET_PATH = '/scratch0/ilya/locDoc/data/hyperspec/datasets'
+DATASET_PATH = os.environ['DATASET_PATH']
 
 def make_dataset_cube_plot():
     mat_contents = sio.loadmat(os.path.join(DATASET_PATH, 'Pavia_center_right.mat'))

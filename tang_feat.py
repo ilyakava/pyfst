@@ -21,8 +21,8 @@ import rgb_pixelNN as pxnn
 
 import pdb
 
-DATA_PATH = '/scratch0/ilya/locDoc/data/hyperspec'
-DATASET_PATH = '/scratch0/ilya/locDoc/data/hyperspec/datasets'
+DATA_PATH = os.environ['DATA_PATH']
+DATASET_PATH = os.environ['DATASET_PATH']
 
 layerO = namedtuple('layerO', ['strides', 'padding'])
 

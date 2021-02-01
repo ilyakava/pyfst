@@ -14,7 +14,7 @@ import scipy.io as sio
 
 import pdb
 
-DATASET_PATH = '/scratch0/ilya/locDoc/data/hyperspec/datasets'
+DATASET_PATH = os.environ['DATASET_PATH']
 
 # dataset_name, data_struct_field_name = ['Smith_117chan.mat', 'Smith']
 ds = 2 # downsample factor

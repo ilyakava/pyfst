@@ -15,8 +15,7 @@ from tqdm import tqdm
 
 import pdb
 
-DATASET_PATH = '/scratch0/ilya/locDoc/data/hyperspec/datasets'
-# DATASET_PATH = '/scratch2/ilyak/locDoc/data/hyperspec/datasets'
+DATASET_PATH = os.environ['DATASET_PATH']
 PAD_TYPE = 'symmetric'
 
 nclass_dict = {

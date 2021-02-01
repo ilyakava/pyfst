@@ -25,19 +25,19 @@ To use this file run the following scripts:
 - `sh scripts/final/train_dffn_IP_replicate.sh`, Replicates the results of DFFN for Indian Pines once.
 - `sh scripts/final/train_EAP_PaviaU_replicate.sh`, Replicates the results of EAP-Area for PaviaU once.
 - `python scripts/generate_many_dl_runs.py`, Generates scripts that will run 10 trials of DFFN and EAP for every dataset.
-- `scripts/final/IP_fst_svm_all.sh`, runs FST and a SVM once every for every mask listed in a txt file.
+- `scripts/final/IP_fst_svm_all.sh`, runs FST and a SVM once for every mask listed in a txt file.
 - `scripts/final/svm_wst_all.sh`, runs WST and SVMs for the 4 datasets mentioned in the paper.
 - `scripts/final/svm_wst_all.sh`, runs SVMs on the raw HSI images for the 4 datasets mentioned in the paper.`
 
 ## Installation for scripts in scripts/final
 
 - install items in "Software Versioning" below
-- compile libsvm in `lib/libsvm` (optional)
+- compile libsvm in `lib/libsvm` (run `make` in `lib/libsvm` and in `lib/libsvm/python`)
 - get masks
 - get mask lists
 - get data
 
-Archived version with masks is here [here](https://github.com/ilyakava/pyfst/releases/tag/MajRev1).
+Archived version with masks is [here](https://github.com/ilyakava/pyfst/releases/tag/MajRev1).
 
 ### Downloading Data
 
@@ -47,7 +47,7 @@ Or, see [the GIC website](http://www.ehu.eus/ccwintco/index.php/Hyperspectral_Re
 
 ### Training Masks
 
-You may download the exact training masks we use in the paper [here](https://drive.google.com/file/d/1p3FB4VTHbLQJQPGzaG_jya5EgLM97qhi/view?usp=sharing) and place them in the `masks` directory.
+You may download the exact training masks we use in the paper [get the masks inside the release here](https://github.com/ilyakava/pyfst/releases/tag/MajRev1) and place them in your `masks` directory.
 
 When using options like `--svm_multi_mask_file_list` there should be a txt file that lists the fully qualified path to each mask file that should be used.
 
@@ -63,6 +63,44 @@ Tested on Python 2.7.14 (Anaconda), tensorflow 1.10.1, cuda 9.0.176, cudnn-7.0 (
 conda create -n venvtfnonb python=2.7.14
 pip install --ignore-installed --upgrade tensorflow-gpu==1.10.1
 pip install sklearn tqdm h5py hdf5storage pillow matplotlib plotly scikit-image
+```
+
+## Docker instructions
+
+### Setup from scratch
+
+```
+cd ~
+git clone https://github.com/ilyakava/pyfst.git
+mkdir hsi_data
+```
+
+```
+docker pull nvcr.io/nvidia/tensorflow:18.10-py2
+docker run --gpus all --shm-size 16G --rm -it -v $HOME/pyfst:/pyfst -v $HOME/hsi_data:/data nvcr.io/nvidia/tensorflow:18.10-py2
+pip install sklearn tqdm h5py hdf5storage pillow matplotlib plotly scikit-image
+cd /pyfst/lib/libsvm
+make
+cd python
+make
+cd /pyfst/masks
+wget https://github.com/ilyakava/pyfst/releases/download/MajRev1/pyfst.tar.gz
+tar -zxvf pyfst.tar.gz
+rm pyfst.tar.gz
+mv pyfst/masks/* ./
+rm -rf pyfst
+cd /pyfst
+apt-get update
+apt-get install python-tk
+```
+
+### Run
+
+```
+
+export DATASET_PATH=/data
+export DATA_PATH=/data/derived
+cd /pyfst/
 ```
 
 ## License

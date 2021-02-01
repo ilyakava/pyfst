@@ -19,8 +19,6 @@ import matplotlib.pyplot as plt
 
 import pdb
 
-
-# DATASET_PATH = '/Users/artsyinc/Documents/MATH630/research/data/hyper'
 DATASET_PATH = (os.environ['DATASET_PATH'])
 
 quadO = namedtuple('quadO', ['x', 'y', 'x_end', 'y_end', 'hist'])

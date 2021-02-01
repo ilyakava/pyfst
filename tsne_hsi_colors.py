@@ -10,8 +10,7 @@ import scipy.io as sio
 import pdb
 
 
-DATASET_PATH = '/scratch0/ilya/locDoc/data/hyperspec/datasets'
-DATASET_PATH = '/fs/vulcan-scratch/ilyak/locDoc/data/hyperspec'
+DATASET_PATH = os.environ['DATASET_PATH']
 dataset_name, data_struct_field_name = ['Salinas_corrected.mat', 'salinas_corrected']
 dataset_name, data_struct_field_name = ['Indian_pines_corrected.mat', 'indian_pines_corrected']
 dataset_name, data_struct_field_name = ['Botswana.mat', 'Botswana']
