@@ -67,12 +67,14 @@ pip install sklearn tqdm h5py hdf5storage pillow matplotlib plotly scikit-image
 
 ## Docker instructions
 
+This docker container was tested on a Nvidia 3090 and a M40.
+
 ### Setup from scratch
 
 ```
 cd ~
 git clone https://github.com/ilyakava/pyfst.git
-mkdir hsi_data
+mkdir -p hsi_data/derived
 ```
 
 ```
@@ -94,14 +96,17 @@ apt-get update
 apt-get install python-tk
 ```
 
-### Run
+### Run an example
 
 ```
-
 export DATASET_PATH=/data
 export DATA_PATH=/data/derived
 cd /pyfst/
+CUDA_VISIBLE_DEVICES=0 sh scripts/KSC_fst_svm_one.sh
 ```
+
+For this example the ST runs on the M40 in 110s.
+For the newer 3090, the Ampere architecture requires more graph compilation time because of the older cuda version. 
 
 ## License
 
